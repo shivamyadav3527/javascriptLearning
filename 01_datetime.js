@@ -29,7 +29,7 @@ console.log(Math.floor(Date.now()/1000));  //1728803219 give current time stamp 
 
 
 
-//Another customization of Date
+//Another customization of Date(INTERVIEW IMP)
 console.log(myDate.toLocaleString('Default', {
     day: "2-digit",
     era: "long",
