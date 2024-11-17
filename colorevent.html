@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Changer</title>
+</head>
+<body>
+    <h1>Hello Color Changer Tool!!</h1>
+    <button id="btn1">Start color</button>
+    <button id="btn2">Stop color</button>
+</body>
+<script>
+    let inter;
+    let hex = "0123456789ABCDEF"
+    const hexGenerator = function() {
+        let hexCode = '#';
+        for (let index = 0; index < 6; index++) {
+            hexCode += hex[Math.floor(Math.random() * 16)];
+        }
+        return hexCode;         
+    }
+
+    document.querySelector('#btn1').addEventListener('click' ,function(){
+        inter = setInterval(changeColor, 1000)
+
+        function changeColor() {
+            document.body.style.backgroundColor = hexGenerator()
+        }
+
+    })
+    document.querySelector('#btn2').addEventListener('click', function(){
+        clearInterval(inter)
+    })
+</script>
+</html>

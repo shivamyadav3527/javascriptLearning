@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hakuna Matata</title>
+</head>
+<body>
+    <h1>Hello Shivam yadav!!!!</h1>
+    <button id="btn1">Start time</button>
+    <button id="btn2">Stop time</button>
+</body>
+<script>
+    let inter;
+    const printDate = function(){
+        console.log("shivam yadav time is", Date.now()); 
+    }
+
+    document.querySelector('#btn1').addEventListener('click' ,function(){
+        inter = setInterval(printDate, 1000)
+
+    })
+    document.querySelector('#btn2').addEventListener('click', function(){
+        clearInterval(inter)
+    })
+</script>
+</html>
