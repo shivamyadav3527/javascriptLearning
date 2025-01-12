@@ -1,0 +1,271 @@
+DB is aggree and collections are authors, books, users
+IMPORTANT-> Matchh operator work as OR operator for the same field , multiple condition 
+and work as AND operator for the different field, multiple condition
+
+Q-1 => Ho may users are active?
+==> [
+  {
+    $match: {
+      isActive: true,
+    }
+  },
+  {
+      $count: 'count'
+  }
+]
+
+
+
+Q-2 => what is the average age of all users?
+--> [
+    {
+        $group: {
+            _id: null,
+            count: {
+                $avg: "$age"
+            }
+        }
+    }
+]
+
+Q-3 => list top 2 favorite fruit?
+==> [
+  {
+    $group: {
+      _id: "$favoriteFruit",
+      count: {
+        $sum: 1
+      }
+    }
+  },
+  {
+    $sort: {
+      count: -1
+    }
+  },
+  {
+    $limit: 2
+  }
+]
+
+
+
+Q-4 => Find the number of males and females
+==> [
+  {
+    $group: {
+      _id: "$gender",
+      totalCount: {
+        $sum: 1
+      }
+    }
+  }
+]
+
+Q-5 => which country has the highest number of registered user?
+==> [
+  {
+    $group:{
+  	_id: "$company.location.country",
+      totalCount:{
+        $sum: 1
+      }
+  	}
+  },
+  {
+    $sort: {
+      	totalCount: -1
+    	}
+  },
+  {
+    $limit: 1
+  }
+]
+
+
+
+Q-6 => what is the average number of tags per user
+==> two solution
+[
+  {
+    $unwind: "$tags"
+  },
+  {
+    $group:{
+      _id: "$_id",
+      tagsCount: {
+        $sum: 1
+      }
+    }
+  },
+  {
+    $group:{
+      _id: null,
+      averagePerUser: {
+        $avg: "$tagsCount"
+      }
+    }
+  }
+]
+
+
+
+[
+  {
+    $addFields: {
+      NoOfTtags: {
+        $size: {
+          $ifNull: ["$tags", []],
+        },
+      },
+    },
+  },
+  {
+    $group: {
+      _id: null,
+      averageNumberTags: {
+        $avg: "$NoOfTtags",
+      },
+    },
+  },
+]
+
+Q-7 => how many users have enim as their tag?
+==> [
+  {
+    $match: {
+    		tags: "enim"
+    }
+  },
+  {
+    $count: "User with enim as tag"
+  }
+]
+
+
+Q-8 => what are the names and age of the users which are inactive and have velit as tag?
+==> [
+  {
+    $match: {
+      tags: 'velit',
+      isActive: false
+    }
+  },
+  {
+    $project: {
+      "age": 1,
+      "name": 1
+    }
+  }
+]
+
+Q-9 => How many users have phone number starting with the '+1 (940)' ?
+==>  [
+  {
+    $match:{
+      "company.phone": /^\+1 \(940\)/
+    }
+  },
+  {
+    $count: "count"
+  }
+]
+
+Q-10 => who has registered the most recently?
+==> [
+  {
+    $sort: {
+      registered: -1
+    }
+  },
+  {
+    $limit: 4
+  },
+  {
+    $project: {
+      age: 1,
+      name: 1,
+      registered: 1
+    }
+  }
+]
+
+
+Q-11 => Categorize user by their favorite food? 
+==> [
+  {
+    $group: {
+      _id: "$favoriteFruit",
+      users: {
+        $push: "$name"
+      }
+    }
+  }
+]
+
+Q-12 => How many user have 'ad' as their second tag in the tags?
+==> [
+  {
+    $match: {
+      "tags.1": "ad"
+    }
+  },
+  {
+    $count: "Second tag is ad"
+  }
+]
+
+IMPORTANT-> Matchh operator work as OR operator for the same field , multiple condition and work as AND operator for the different field
+Q-13 => How many user have both 'enim' and 'id' as their tagss?
+==>[
+  {
+    $match: {
+      tags: {
+        $all: ["enim", "id"],
+      },
+    },
+  },
+  {
+    $count: "count"
+  }
+]
+
+Q-14 => List all the companies located in USA with their corresponding user count?
+==> [
+  {
+    $match: {
+      "company.location.country": "USA",
+    }
+  },
+  {
+    $group: {
+      _id: "$company.title",
+    	userCount: {
+      	$sum: 1
+    	}
+  	}
+  }
+]
+
+Q-15 => Lookup the author and books to find out the author detail in books?
+==> [
+  {
+    $lookup: {
+      from: "authors",
+      localField: "author_id",
+      foreignField: "_id",
+      as: "author_details"
+    }
+  },
+  {
+  	$addFields: {
+  	  author_details: {
+        $first: "$author_details"
+      }
+  	}  
+  }
+]
+
+
+In place of $first we can also use this: $arrayElemAt: ["$author_details", 0] , both are fundamentally same
+but arrayElemAt is more readable.
